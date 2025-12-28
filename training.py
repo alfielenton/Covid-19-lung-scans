@@ -1,4 +1,5 @@
 import json
+from matplotlib import pyplot as plt
 import torch
 from torch import nn
 from torch import optim
@@ -162,3 +163,17 @@ with torch.no_grad():
 
 acc = correct / total * 100
 print(f"Test Accuracy: {acc:.2f}%")
+
+fig, axs = plt.subplots(2, 1, figsize=(10, 10))
+
+axs[0].plot(epoch_losses['training'])
+axs[0].set_xlabel('# Epoch')
+axs[0].set_ylabel('Training loss')
+axs[0].set_title('Training loss of model over epochs')
+
+axs[1].plot(forward_pass_losses['training'])
+axs[1].set_xlabel('# Forward pass')
+axs[1].set_ylabel('Forward pass training loss')
+axs[1].set_title('Training loss of model over forward pass')
+
+plt.show()
