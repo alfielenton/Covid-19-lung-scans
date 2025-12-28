@@ -12,6 +12,11 @@ transform_with_crop = transforms_v2.Compose([transforms_v2.CenterCrop(350),
 transform_without_crop = transforms_v2.Compose([transforms_v2.Resize(512)])
 general_transforms = transform_with_crop
 
+if general_transforms is transform_with_crop:
+    print('General transformation includes cropping')
+else:
+    print('General transformation does not include cropping')
+
 model = Network()
 checkpoint = torch.load('model-results//model_checkpoint.pth')
 model.load_state_dict(checkpoint['model_state_dict'])

@@ -44,6 +44,11 @@ transform_without_crop = transforms_v2.Compose([transforms_v2.Resize(512)])
 
 general_transforms = transform_with_crop
 
+if general_transforms is transform_with_crop:
+    print('\nGeneral transformation includes cropping')
+else:
+    print('\nGeneral transformation does not include cropping')
+
 train_transform = transforms_v2.Compose([transforms_v2.RandomHorizontalFlip(),
                                          transforms_v2.RandomVerticalFlip(),
                                          transforms_v2.RandomRotation((-15,15))])
