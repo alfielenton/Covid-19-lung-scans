@@ -9,4 +9,4 @@ pip install torch torchvision --index-url https://download.pytorch.org/whl/cu129
 pip install matplotlib
 ```
 
-In terminal, you can run the training.py module. 
+In terminal, you can run the training.py module.
