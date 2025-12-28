@@ -6,7 +6,6 @@ The modules require the following installed packages:
 
 ```
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu129
-pip install json
 pip install matplotlib
 ```
 
