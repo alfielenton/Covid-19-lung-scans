@@ -9,4 +9,8 @@ pip install torch torchvision --index-url https://download.pytorch.org/whl/cu129
 pip install matplotlib
 ```
 
-In terminal, you can run the training.py module.
+The model is written in the 'network' module and is a standard convolutional neural network. It has three convolutional layers that feed into two fully connected layers, all with biases.
+
+The model is trained on a dataset of CT scans obtained from Kaggle with an example below.
+
+![Diagram](readme-diagrams/COVID-19_0015.png)
