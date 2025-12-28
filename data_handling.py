@@ -67,39 +67,36 @@ class DataConverter:
             print(f'Input data dimensions: {self.unnorm_inputs.size()}')
             print(f'Labels dimensions: {self.labels.size()}\n')
 
-    def train_test_splitting(self,split_train, split_val):
+    def train_test_splitting(self,split_train):
 
-        print(f'Shuffling data and splitting at {split_train}:{split_val}:{(1 - split_val - split_train):.2f} ratio')
+        print(f'Shuffling data and splitting at {split_train}:{(1 - split_train):.2f} ratio')
         
         split_train_index = int(self.N * split_train)
-        split_val_index = int(self.N * (split_train + split_val))
         perm = torch.randperm(self.N)
 
         shuffled_inputs = self.norm_inputs[perm]
         shuffled_labels = self.labels[perm]
 
-        train_inputs, val_inputs, test_inputs = shuffled_inputs[:split_train_index], shuffled_inputs[split_train_index:split_val_index], shuffled_inputs[split_val_index:]
-        train_labels, val_labels, test_labels = shuffled_labels[:split_train_index], shuffled_labels[split_train_index:split_val_index], shuffled_labels[split_val_index:]
+        train_inputs, test_inputs = shuffled_inputs[:split_train_index], shuffled_inputs[split_train_index:]
+        train_labels, test_labels = shuffled_labels[:split_train_index], shuffled_labels[split_train_index:]
 
         train_size = train_inputs.size(0)
-        val_size = val_inputs.size(0)
         test_size = test_inputs.size(0)
 
         if self.verbose:
             print(f'Training size: {train_size}')
-            print(f'Validation size: {val_size}')
             print(f'Testing size: {test_size}\n')
 
         frac_non_covids_train , frac_covids_train = (train_labels==0).sum().item() / train_size , (train_labels==1).sum().item() / train_size
-        frac_non_covids_val , frac_covids_val = (val_labels==0).sum().item() / val_size , (val_labels==1).sum().item() / val_size
         frac_non_covids_test , frac_covids_test = (test_labels==0).sum().item() / test_size , (test_labels==1).sum().item() / test_size
 
         if self.verbose:
             print(f'Percentage of Non Covids in Training data: {round(frac_non_covids_train*100,3)}%')
             print(f'Percentage of Covids in Training data: {round(frac_covids_train*100,3)}%\n')
-            print(f'Percentage of Non Covids in Validation data: {round(frac_non_covids_val*100,3)}%')
-            print(f'Percentage of Covids in Validation data: {round(frac_covids_val*100,3)}%\n')
             print(f'Percentage of Non Covids in Testing data: {round(frac_non_covids_test*100,3)}%')
             print(f'Percentage of Covids in Testing data: {round(frac_covids_test*100,3)}%\n')
 
-        return train_inputs, train_labels, val_inputs, val_labels, test_inputs, test_labels
+        return train_inputs, train_labels, test_inputs, test_labels
+    
+dc = DataConverter()
+x_train, y_train, x_test, y_test = dc.train_test_splitting(0.7)
