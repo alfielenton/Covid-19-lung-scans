@@ -85,6 +85,20 @@ print('Training results saved')
 torch.save({'model_state_dict':model.state_dict()},'model-results//model_checkpoint.pth')
 print('Model Saved!')
 
+fig, axs = plt.subplots(2, 1, figsize=(10, 10))
+
+axs[0].plot(epoch_losses)
+axs[0].set_xlabel('# Epoch')
+axs[0].set_ylabel('Training loss')
+axs[0].set_title('Training loss of model over epochs')
+
+axs[1].plot(forward_pass_losses)
+axs[1].set_xlabel('# Forward pass')
+axs[1].set_ylabel('Forward pass training loss')
+axs[1].set_title('Training loss of model over forward pass')
+
+plt.show()
+
 print('\nEvaluating Model')
 model.to('cpu')
 model.eval()
@@ -159,17 +173,3 @@ print('False negatives', fn)
 
 acc = correct / total * 100
 print(f"Test Accuracy: {acc:.2f}%")
-
-fig, axs = plt.subplots(2, 1, figsize=(10, 10))
-
-axs[0].plot(epoch_losses)
-axs[0].set_xlabel('# Epoch')
-axs[0].set_ylabel('Training loss')
-axs[0].set_title('Training loss of model over epochs')
-
-axs[1].plot(forward_pass_losses)
-axs[1].set_xlabel('# Forward pass')
-axs[1].set_ylabel('Forward pass training loss')
-axs[1].set_title('Training loss of model over forward pass')
-
-plt.show()
