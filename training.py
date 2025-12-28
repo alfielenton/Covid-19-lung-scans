@@ -146,6 +146,17 @@ with torch.no_grad():
     correct = (preds == y_test).sum().item()
     total = x_test.size(0)
 
+tp = preds[y_test==1].sum().item()
+fp = preds[y_test==0].sum().item()
+
+tn = (1 - preds[y_test==0]).sum().item()
+fn = (1 - preds[y_test==1]).sum().item()
+
+print('True positives', tp)
+print('False positives', fp)
+print('True negatives', tn)
+print('False negatives', fn)
+
 acc = correct / total * 100
 print(f"Test Accuracy: {acc:.2f}%")
 
