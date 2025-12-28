@@ -11,9 +11,10 @@ import data_handling
 dc = data_handling.DataConverter()
 split_train = 0.7
 split_val = 0.001
-X_train, Y_train, X_val, Y_val, X_test, Y_test = dc.train_test_splitting(split_train, split_val)
+X_train, Y_train, X_test, Y_test = dc.train_test_splitting(split_train)
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
+print(f'Device being used: {device}')
 model = Network()
 model.to(device)
 model.train()
@@ -28,7 +29,6 @@ BATCH_SIZE = 32
 
 
 train_ds = TensorDataset(X_train, Y_train)
-val_ds = TensorDataset(X_val, Y_val)
 
 class_counts = torch.tensor([(Y_train == t).sum().item() for t in [0,1]])
 class_weights = 1. / class_counts
@@ -36,7 +36,6 @@ sample_weights = class_weights[Y_train]
 sampler = WeightedRandomSampler(sample_weights,num_samples=len(sample_weights),replacement=True)
 
 train_dl = DataLoader(train_ds, batch_size=BATCH_SIZE, sampler=sampler)
-val_dl = DataLoader(val_ds, batch_size=BATCH_SIZE)
 
 transform_with_crop = transforms_v2.Compose([transforms_v2.CenterCrop(350),
                                             transforms_v2.Resize(512)])
@@ -51,14 +50,12 @@ train_transform = transforms_v2.Compose([transforms_v2.RandomHorizontalFlip(),
 
 print("Starting training...")
 print(f'Train for {num_epochs} epochs')
-epoch_losses = {'training':[], 'validation':[]}
-forward_pass_losses = {'training':[], 'validation':[]}
+epoch_losses = []
+forward_pass_losses = []
 
 for epoch in range(num_epochs):
     epoch_training_loss = 0.0
-    epoch_validation_loss = 0.0
 
-    
     for x_batch, y_batch in train_dl:
 
         x_batch, y_batch = x_batch.to(device), y_batch.to(device)
@@ -72,23 +69,11 @@ for epoch in range(num_epochs):
         optimiser.step()
 
         epoch_training_loss += loss.item() / x_batch.size(0)
-        forward_pass_losses['training'].append(loss.item() / x_batch.size(0))
+        forward_pass_losses.append(loss.item() / x_batch.size(0))
 
-    for x_batch, y_batch in val_dl:
+    epoch_losses.append(epoch_training_loss)
 
-        x_batch, y_batch = x_batch.to(device), y_batch.to(device)
-        augmented_batch = general_transforms(x_batch)
-
-        logits = model(augmented_batch)
-        loss = criterion(logits, y_batch.float())
-
-        epoch_validation_loss += loss.item() / x_batch.size(0)
-        forward_pass_losses['validation'].append(loss.item() / x_batch.size(0))
-
-    epoch_losses['training'].append(epoch_training_loss)
-    epoch_losses['validation'].append(epoch_validation_loss)
-
-    print(f"Epoch {epoch+1}/{num_epochs} | Total Training Loss per Sample: {epoch_training_loss:.4f} | Total Validation Loss per Sample: {epoch_validation_loss:.4f}")
+    print(f"Epoch {epoch+1}/{num_epochs} | Total Training Loss per Sample: {epoch_training_loss:.4f}")
 print()
 
 with open('model-results//training_results.json','w') as f:
@@ -166,12 +151,12 @@ print(f"Test Accuracy: {acc:.2f}%")
 
 fig, axs = plt.subplots(2, 1, figsize=(10, 10))
 
-axs[0].plot(epoch_losses['training'])
+axs[0].plot(epoch_losses)
 axs[0].set_xlabel('# Epoch')
 axs[0].set_ylabel('Training loss')
 axs[0].set_title('Training loss of model over epochs')
 
-axs[1].plot(forward_pass_losses['training'])
+axs[1].plot(forward_pass_losses)
 axs[1].set_xlabel('# Forward pass')
 axs[1].set_ylabel('Forward pass training loss')
 axs[1].set_title('Training loss of model over forward pass')

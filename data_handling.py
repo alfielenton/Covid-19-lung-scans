@@ -97,6 +97,3 @@ class DataConverter:
             print(f'Percentage of Covids in Testing data: {round(frac_covids_test*100,3)}%\n')
 
         return train_inputs, train_labels, test_inputs, test_labels
-    
-dc = DataConverter()
-x_train, y_train, x_test, y_test = dc.train_test_splitting(0.7)
