@@ -10,7 +10,6 @@ import data_handling
 
 dc = data_handling.DataConverter()
 split_train = 0.7
-split_val = 0.001
 X_train, Y_train, X_test, Y_test = dc.train_test_splitting(split_train)
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
